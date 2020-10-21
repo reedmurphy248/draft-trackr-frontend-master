@@ -3,8 +3,6 @@ import axios from "axios";
 
 import ReactFileReader from "react-file-reader";
 
-import SelectedFile from "./SelectedFile";
-
 export default class UploadContacts extends Component {
     constructor(props) {
         super(props);

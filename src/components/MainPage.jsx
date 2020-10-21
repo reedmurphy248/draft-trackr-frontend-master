@@ -1,7 +1,10 @@
 import React, { Component } from "react";
 import axios from "axios";
+import base64 from "base-64";
 
 import ContactRow from "./ContactRow";
+import encryptWithPublicKey from "../services/emailSecurity";
+import getAuthHeader from "../services/tokenService";
 
 export default class MainPage extends Component {
     constructor(props) {
@@ -11,20 +14,20 @@ export default class MainPage extends Component {
         this.selectContacts = this.selectContacts.bind(this);
         this.handleChange = this.handleChange.bind(this);
         this.sendEmail = this.sendEmail.bind(this);
+        this.encryptPassword = this.encryptPassword.bind(this);
 
         this.state = {
             contacts: [],
             // List of contact _id's
             selectedContacts: [],
-            email: ""
+            email: "",
+            userEmailPassword: ""
         }
     }
     componentDidMount() {
         const userInfo = JSON.parse(localStorage.getItem('user'));
         if (userInfo !== null) {
-            const token = userInfo.data.accessToken;
-            const authHeader = { "x-access-token": token };
-            axios.get('http://localhost:5000/contacts/all', { headers: authHeader })
+            axios.get('http://localhost:5000/contacts/all', { headers: getAuthHeader() })
                 .then(res => {
                     this.setState({
                         contacts: res.data
@@ -60,23 +63,28 @@ export default class MainPage extends Component {
         console.log(this.state.selectedContacts);
     }
     handleChange(event) {
-        this.setState({
-            email: event.target.value
-        })
+        this.setState({[event.target.name]: event.target.value});
+    }
+    encryptPassword() {
+        axios.get('http://localhost:5000/security/', { headers: getAuthHeader() })
+            .then(key => {
+                const encryptedMessage = encryptWithPublicKey(key.data, this.state.userEmailPassword);
+                const jsonObj = JSON.stringify(encryptedMessage);
+                const b64encode = base64.encode(jsonObj);
+                this.setState({ userEmailPassword: b64encode });
+            })
+            .catch(err => console.log(err));
     }
     sendEmail(event) {
         event.preventDefault();
 
-        const userInfo = JSON.parse(localStorage.getItem('user'));
-        const token = userInfo.data.accessToken;
-        const authHeader = { "x-access-token": token };
-
         const emailbody = {
             email: this.state.email,
-            selectedContacts: this.state.selectedContacts
+            selectedContacts: this.state.selectedContacts,
+            userEmailPassword: this.state.userEmailPassword
         }
         // Send over the token to know who is the sender, the contacts they wish to send to, and the draft
-        axios.post('http://localhost:5000/contacts/send', emailbody, { headers: authHeader })
+        axios.post('http://localhost:5000/contacts/send', emailbody, { headers: getAuthHeader() })
             .then(res => console.log(res))
             .catch(err => console.log("Error: " + err));
     }
@@ -84,7 +92,14 @@ export default class MainPage extends Component {
         return (
             <div className="container">
                 <h1>Write Draft</h1>
-                <textarea onChange={this.handleChange} cols="90" rows="12"></textarea>
+                <textarea name="email" value={this.state.email} onChange={this.handleChange} cols="90" rows="12"></textarea>
+                <h2>Email Password</h2>
+                <small>Needed to send emails via your account</small>
+                <br/>
+                <small>Your email will be encrypted and never saved on file so no one anyone will ever have access to it</small>
+                <br />
+                <input name="userEmailPassword" value={this.state.userEmailPassword} onChange={this.handleChange} type="password" placeholder="Account Password"></input>
+                <button onClick={this.encryptPassword} className="btn btn-primary">Encrypt Password</button>
                 <br/>
                 <button onClick={this.sendEmail} type="submit" className="btn btn-primary">Submit</button>
                 <div className="jumbotron jumbotron-fluid">
