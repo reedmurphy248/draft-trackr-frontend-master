@@ -1,25 +1,29 @@
 import React from 'react';
-import logo from './logo.svg';
 import './App.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+import { BrowserRouter as Router, Route } from "react-router-dom";
+
+import Navbar from "./components/Navbar";
+import Register from "./components/Register";
+import Login from "./components/Login";
+import MainPage from "./components/MainPage";
+import Logout from "./components/Logout";
+import UploadContacts from './components/UploadContacts';
+import postRegistration from './components/PostRegistration';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <div className="App">
+        <Navbar />
+        <Route path="/register" component={Register} />
+        <Route path="/" exact component={Login} />
+        <Route path="/main" component={MainPage} />
+        <Route path="/logout" component={Logout} />
+        <Route path="/upload" component={UploadContacts} />
+        <Route path="/postRegistration" component={postRegistration} />
+      </div>
+    </Router>
   );
 }
 
