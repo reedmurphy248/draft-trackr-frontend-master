@@ -6,6 +6,8 @@ import ContactRow from "./ContactRow";
 import encryptWithPublicKey from "../services/emailSecurity";
 import getAuthHeader from "../services/tokenService";
 
+import isIn from "../services/isIn";
+
 export default class MainPage extends Component {
     constructor(props) {
         super(props);
@@ -35,20 +37,21 @@ export default class MainPage extends Component {
                 })
                 .catch(err => {
                     console.log("Error: " + err);
-                    window.location = "/"
+                    // window.location = "/"
                 })
         } else {
-            window.location = "/";
+            // window.location = "/";
         }
         
     }
     produceContactData() {
         return (this.state.contacts.map((contact)=>{
-            return <ContactRow selectContacts={this.selectContacts} key={contact._id} id={contact._id} company={contact.company} firstName={contact.firstName} lastName={contact.lastName} email={contact.email}/>
+            return <ContactRow selectContacts={this.selectContacts} key={contact._id} id={contact._id} checked={isIn(contact._id, this.state.selectedContacts)} company={contact.company} firstName={contact.firstName} lastName={contact.lastName} email={contact.email}/>
         }))
     }
     selectContacts(event) {
         event.preventDefault();
+
         const contacts = this.state.selectedContacts
         for (let i = 0; i < contacts.length; i++) {
             if (contacts[i] === event.target.id) {
@@ -59,7 +62,7 @@ export default class MainPage extends Component {
                 return;
             }
         }
-        this.state.selectedContacts.push(event.target.id);
+        this.setState({selectedContacts: this.state.selectedContacts.concat(event.target.id)});
         console.log(this.state.selectedContacts);
     }
     handleChange(event) {

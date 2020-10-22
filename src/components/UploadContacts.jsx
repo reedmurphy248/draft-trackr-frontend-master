@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import axios from "axios";
 
 import ReactFileReader from "react-file-reader";
+import SelectedFile from "./SelectedFile";
 
 export default class UploadContacts extends Component {
     constructor(props) {
@@ -14,7 +15,15 @@ export default class UploadContacts extends Component {
     }
     handleFiles = files => {
         const inputArr = files.base64.split(",");
-        this.state.files[files.fileList[0].name] = inputArr[1];
+
+        this.setState({ files: {
+            ...this.state.files, 
+            [files.fileList[0].name]: inputArr[1]
+        } })
+    }
+    removeFile(event) {
+        console.log(event.target.name);
+        // this.setState({files: delete this.state.files."Email Script Practice - Sheet1.csv"})
     }
     uploadFiles(event) {
         event.preventDefault();
@@ -36,6 +45,12 @@ export default class UploadContacts extends Component {
                     <button className='btn btn-primary'>Select Files</button>
                 </ReactFileReader>
                 <button onClick={this.uploadFiles} className='btn btn-primary'>Upload Files</button>
+                <div class="jumbotron jumbotron-fluid">
+                    <div class="container">
+                        <h1 class="display-4">Selected Files</h1>
+                        <div>{Object.keys(this.state.files).map(file => <SelectedFile removeFile={this.removeFile} fileName={file}/>)}</div>
+                    </div>
+                </div>
             </div>
         )
     }
