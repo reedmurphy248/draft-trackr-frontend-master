@@ -1,22 +1,10 @@
-import React, { Component } from "react";
+import React from "react";
 
-import isIn from "../services/isIn";
-
-class ContactRow extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
+export default function ContactRow(props) {
         return (
-            <div key={this.props.key}>
-                <input checked={this.props.checked} onClick={this.props.selectContacts}  id={this.props.id} type="checkbox"></input>
-                <p>
-                    {this.props.company} | {this.props.firstName} | {this.props.lastName} | {this.props.email}
-                </p>
+            <div id={props.id}>
+                <input type="checkbox" onClick={props.selectContacts}/>
+                <p>{props.company} | {props.firstName} | {props.lastName} | {props.email}</p>
             </div>
         )
-    }
-
 }
-
-export default ContactRow;

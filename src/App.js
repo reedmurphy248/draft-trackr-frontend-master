@@ -10,6 +10,8 @@ import MainPage from "./components/MainPage";
 import Logout from "./components/Logout";
 import UploadContacts from './components/UploadContacts';
 import postRegistration from './components/PostRegistration';
+import RemoveContacts from './components/RemoveContacts';
+import WelcomePage from './components/WelcomePage';
 
 function App() {
   return (
@@ -17,11 +19,13 @@ function App() {
       <div className="App">
         <Navbar />
         <Route path="/register" component={Register} />
-        <Route path="/" exact component={Login} />
+        <Route path="/login" component={Login} />
         <Route path="/main" component={MainPage} />
         <Route path="/logout" component={Logout} />
         <Route path="/upload" component={UploadContacts} />
         <Route path="/postRegistration" component={postRegistration} />
+        <Route path="/remove" component={RemoveContacts} />
+        <Route path="/" exact component={WelcomePage} />
       </div>
     </Router>
   );
