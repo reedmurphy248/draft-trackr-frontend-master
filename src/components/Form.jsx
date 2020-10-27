@@ -59,12 +59,14 @@ export default function Form(props) {
     function onSubmit(event) {
         event.preventDefault();
 
+        console.log("Clicked");
+
         const User = {
             username: user.email,
             password: user.password
         }
 
-        if (props.header === 'Register') {
+        if (props.header === 'Sign Up') {
             axios.post('http://localhost:5000/users/signup', User)
                 .then(() => {
                     window.location = "/postRegistration";
@@ -78,7 +80,7 @@ export default function Form(props) {
                 });
         }
 
-        if (props.header === 'Login') {
+        if (props.header === 'Sign In') {
             axios.post('http://localhost:5000/users/signin', User)
                 .then(res => {
                     localStorage.setItem('user', JSON.stringify(res));

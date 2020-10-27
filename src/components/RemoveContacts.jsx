@@ -8,6 +8,8 @@ import ContactRowDelete from "./ContactRowDelete";
 import getAuthHeader from "../services/tokenService";
 import { Container, CssBaseline } from "@material-ui/core";
 
+import DataTable from "./Table";
+
 const useStyles = makeStyles((theme) => ({
     paper: {
         display: 'flex',
@@ -46,8 +48,8 @@ export default function RemoveContacts(props) {
 
     });
     function removeContactData(event) {
-        axios.delete(`http://localhost:5000/contacts/${event.target.parentElement.parentElement.id}`)
-            .then(() => window.location = "/remove")
+        axios.delete(`http://localhost:5000/contacts/${event.target.parentElement.parentElement.parentElement.id}`)
+            // .then(() => window.location = "/remove")
             .catch(err => console.log(err))
     }
     function produceContactData() {
@@ -57,14 +59,14 @@ export default function RemoveContacts(props) {
             </div>
         }));
     }
+    
+    
     function pageAccess() {
         return (
             <Container maxWidth="md" component="main">
                 <CssBaseline />
                 <h1 className={classes.title}>Contacts</h1>
-                <div className={classes.paper}>
-                    <div>{produceContactData()}</div>
-                </div>
+                <DataTable rows={contacts} removeContactData={removeContactData}></DataTable>
             </Container>
         )
     }
