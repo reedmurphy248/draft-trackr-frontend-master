@@ -1,106 +1,153 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 import axios from "axios";
+
+import Button from '@material-ui/core/Button';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import Container from '@material-ui/core/Container';
 
 import AlertDismissable from "./AlertDismissable";
 
-export default class Form extends Component {
-    constructor(props){
-        super(props);
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        marginTop: theme.spacing(8),
+        display: 'flex',
+        flexDirection: 'column',
+    },
+    form: {
+        width: '100%', // Fix IE 11 issue.
+        marginTop: theme.spacing(1),
+    },
+    submit: {
+        margin: theme.spacing(3, 0, 2),
+    },
+}));
 
-        this.handleChange = this.handleChange.bind(this);
-        this.onSubmit = this.onSubmit.bind(this);
-        this.setShow = this.setShow.bind(this);
-        this.createAlert = this.createAlert.bind(this);
+export default function Form(props) {
+    const classes = useStyles();
 
-        this.state = {
-            email: "",
-            password: "",
-            alert: false,
-            error: ""
-        }
+    const [user, updateUser] = useState({
+        email: "",
+        password: ""
+    })
+    const [isAlert, setAlert] = useState(false);
+
+    function handleChange(event) {
+        const { name, value } = event.target;
+
+        updateUser(prevValue => {
+            if (name === "email") {
+                return {
+                    email: value,
+                    password: prevValue.password
+                }
+            } else if (name === "password") {
+                return {
+                    email: prevValue.email,
+                    password: value
+                }
+            }
+        })
     }
 
-    handleChange(event) {
-        this.setState({[event.target.name]: event.target.value});
+    function setShow() {
+        this.setState({ alert: true });
     }
 
-    setShow() {
-        this.setState({alert: true});
-    }
-
-    onSubmit(event) {
+    function onSubmit(event) {
         event.preventDefault();
 
         const User = {
-            username: this.state.email,
-            password: this.state.password
+            username: user.email,
+            password: user.password
         }
 
-        if (this.props.header === 'Register') {
+        if (props.header === 'Register') {
             axios.post('http://localhost:5000/users/signup', User)
-                .then((res) => {
+                .then(() => {
                     window.location = "/postRegistration";
                 })
-                .catch((err) => {
-                    this.setState({ alert: true, email: "" });
+                .catch(() => {
+                    setAlert(true);
+                    updateUser({
+                        email: "",
+                        password: ""
+                    });
                 });
         }
-        
-        if (this.props.header === 'Login') {
+
+        if (props.header === 'Login') {
             axios.post('http://localhost:5000/users/signin', User)
                 .then(res => {
-                    console.log("posted");
                     localStorage.setItem('user', JSON.stringify(res));
-                    console.log("Changing");
                     window.location = "/main";
-                    console.log("Changed");
                 })
-                .catch(err => {
-                    this.setState({ alert: true, email: "", password: "" });
+                .catch(() => {
+                    setAlert(true);
+                    updateUser({
+                        email: "",
+                        password: ""
+                    });
                 });
         }
 
     }
 
-    createAlert() {
-        if (this.state.alert === false) {
+    function createAlert() {
+        if (!isAlert) {
             return <h1></h1>;
-        } else if (this.state.alert === true && this.props.header === 'Register') {
+        } else if (isAlert && props.header === 'Register') {
             return (
-                <AlertDismissable 
-                    error="Username Already Exists" 
+                <AlertDismissable
+                    error="Username Already Exists"
                     explanation="The email you entered for your username has already been taken"
-                    onClose={() => this.setState({alert: false})} 
+                    onClose={() => setAlert(false)}
                 />
             )
-        } else if (this.state.alert === true && this.props.header === 'Login') {
+        } else if (isAlert && props.header === 'Login') {
             return (
-                <AlertDismissable 
-                error="Invalid Login" 
-                explanation="The username or password you entered is incorrect"
-                onClose={() => this.setState({alert: false})} 
+                <AlertDismissable
+                    error="Invalid Login"
+                    explanation="The username or password you entered is incorrect"
+                    onClose={() => setAlert(false)}
                 />
             )
         }
     }
 
-    render() {
-        return (
-            <div className="container">
-                <h1>{this.props.header}</h1>
-                <form>
-                    <div className="form-group">
-                        <label for="exampleInputEmail1">Email address</label>
-                        <input onChange={this.handleChange} type="email" name="email" value={this.state.email} className="form-control" id="exampleInputEmail1" placeholder="Enter email" />
-                    </div>
-                    <div>{this.createAlert()}</div>
-                    <div className="form-group">
-                        <label for="exampleInputPassword1">Password</label>
-                        <input onChange={this.handleChange} type="password" name="password" value={this.state.password} className="form-control" id="exampleInputPassword1" placeholder="Password" />
-                    </div>
-                    <button onClick={this.onSubmit} type="submit" className="btn btn-primary">Submit</button>
+    return (
+        <Container component="main" maxWidth="xs">
+            <CssBaseline />
+            <div className={classes.paper}>
+                <Typography component="h1" variant="h4">
+                    {props.header}
+                </Typography>
+                <form className={classes.form}>
+                    <TextField
+                        onChange={handleChange}
+                        type="email" name="email" value={user.email}
+                        label="Email Address" variant="outlined" margin="normal"
+                        required fullWidth autoFocus
+                    />
+                    <div>{createAlert()}</div>
+                    <TextField
+                        onChange={handleChange}
+                        type="password" name="password" value={user.password}
+                        label="Password" variant="outlined"
+                        required fullWidth
+                    />
+                    <Button
+                        onClick={onSubmit} type="submit"
+                        variant="contained" color="primary" size="large"
+                        fullWidth
+                        className={classes.submit}
+                    >
+                        {props.header}
+                    </Button>
                 </form>
             </div>
-        )
-    }
+        </Container>
+    )
 }

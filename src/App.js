@@ -13,6 +13,8 @@ import postRegistration from './components/PostRegistration';
 import RemoveContacts from './components/RemoveContacts';
 import WelcomePage from './components/WelcomePage';
 
+
+
 function App() {
   return (
     <Router>

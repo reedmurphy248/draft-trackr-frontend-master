@@ -4,7 +4,7 @@ import Form from "./Form";
 export default class Login extends Component {
     render() {
         return (
-            <Form header="Login" />
+            <Form header="Sign In" />
         )
     }
 }
