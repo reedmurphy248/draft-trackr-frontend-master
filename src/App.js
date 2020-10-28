@@ -4,7 +4,6 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
 
 import MainNav from "./components/MainNav";
-import Register from "./components/Register";
 import Login from "./components/Login";
 import MainPage from "./components/MainPage";
 import Logout from "./components/Logout";
@@ -21,7 +20,6 @@ function App() {
     <Router>
       <div className="App">
         <MainNav />
-        <Route path="/register" component={Register} />
         <Route path="/login" component={Login} />
         <Route path="/main" component={MainPage} />
         <Route path="/logout" component={Logout} />

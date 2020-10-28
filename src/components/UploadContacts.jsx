@@ -1,49 +1,36 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import { Container, CssBaseline, Button, Grid, Typography } from "@material-ui/core";
+import { Button, Grid } from "@material-ui/core";
 import { makeStyles } from '@material-ui/core/styles';
 import 'fontsource-roboto';
+
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
+import ContactMailIcon from '@material-ui/icons/ContactMail';
 
 import ReactFileReader from "react-file-reader";
 import SelectedFile from "./SelectedFile";
 
 import getAuthHeader from "../services/tokenService";
 
-// const useStyles = makeStyles((theme) => ({
-//     container: {
-//         display: 'flex',
-//         flexDirection: 'column',
-//         alignItems: 'center',
-//     },
-//     paper: {
-//         display: 'flex',
-//         flexDirection: 'column',
-//         borderRadius: '8px',
-//         // boxShadow: '1px 1px 5px black',
-//         minHeight: '70vh',
-//         alignItems: 'center',
-//         margin: '50px',
-//         border: '#323aa8 solid 1px',
-//         minWidth: '40%',
-//         // background: 'linear-gradient(55deg, #e5e3ea 30%, #91e7ea 90%)',
-//         backgroundColor: '#4361ee'
-//     },
-//     grid: {
-//         justifyContent: 'center',
-//         maxWidth: '40%',
-//         marginTop: '1vh'
-//     },
-//     selectedPanel: {
-//         borderRadius: '5px',
-//         minWidth: '50%',
-//         // minHeight: '40vh',
-//         alignItems: 'center',
-//         display: 'flex',
-//         flexDirection: 'column',
-//         margin: '10px'
-//     }
-// }));
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '10vh',
+    },
+    root: {
+        minWidth: '40%',
+    },
+    header: {
+        backgroundColor: '#3f51b5',
+        color: 'white',
+    }
+}));
 
 export default function UploadContacts() {
     const classes = useStyles();
@@ -90,25 +77,36 @@ export default function UploadContacts() {
     }
     function pageAccess() {
         return (
-            // <Container className={classes.container}>
-            // <CssBaseline />
-            //     <div className={classes.paper}>
-            //         <Typography variant="h3" style={{marginTop: "3vh"}}>Upload Files</Typography>
-            //         <Container className={classes.selectedPanel}>
-            //             <div>{files.map((file, index) => <SelectedFile key={index} removeFile={removeFile} fileName={file[0]} />)}</div>
-            //         </Container>
-            //         <Grid container className={classes.grid} spacing={3}>
-            //             <Grid item>
-            //                 <ReactFileReader fileTypes={".csv"} base64={true} handleFiles={handleFiles}>
-            //                     <Button color='primary' variant="contained">Select Files</Button>
-            //                 </ReactFileReader>
-            //             </Grid>
-            //             <Grid item>
-            //                 <Button onClick={uploadFiles} size="md" color='primary' variant="contained">Upload Files</Button>
-            //             </Grid>
-            //         </Grid>
-            //     </div>
-            // </Container>
+            <div className={classes.paper}>
+                <Card className={classes.root}>
+                    <CardHeader
+                        className={classes.header}
+                        avatar={
+                            <ContactMailIcon />
+                        }
+                        titleTypographyProps={{variant:'h5' }}
+                        style={{textAlign: "left"}}
+                        title="Select Contacts"
+                    />
+                    <CardContent style={{minHeight: '40vh'}}>
+                        <div>{files.map((file, index) => <SelectedFile key={index} removeFile={removeFile} fileName={file[0]} />)}</div>
+                    </CardContent>
+                    <CardActions disableSpacing>
+                        <Grid container spacing={2} style={{marginLeft: '1%'}}>
+                            <Grid item lg={4}>
+                                <ReactFileReader fileTypes={".csv"} base64={true} handleFiles={handleFiles}>
+                                    <Button fullWidth color='primary' size="large" variant="contained">Select</Button>
+                                </ReactFileReader>
+                            </Grid>
+                            <Grid item lg={4}>
+                                <Button onClick={uploadFiles} fullWidth color="primary" size="large" variant="contained">
+                                    Upload
+                                </Button>
+                            </Grid>
+                        </Grid>
+                    </CardActions>
+                </Card>
+            </div>
         )
     }
     return (

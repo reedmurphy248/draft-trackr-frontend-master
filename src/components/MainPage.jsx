@@ -50,6 +50,8 @@ export default function MainPage() {
     const [selectedContacts, changeSelected] = useState([]);
     const [loggedIn, changeStatus] = useState(false);
 
+    const [checked, changeChecked] = useState(false);
+
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('user'));
         if (userInfo !== null) {
@@ -168,7 +170,7 @@ export default function MainPage() {
                     </Grid>
                     <Container className={classes.bottomHalf}>
                         <Typography variant="h3">Select Contacts</Typography>
-                        <DataTable type="add" selectContacts={selectContacts} rows={contacts}/>
+                        <DataTable type="add" checked={isIn()} selectContacts={selectContacts} rows={contacts}/>
                     </Container>
                 </div>
             </Container>

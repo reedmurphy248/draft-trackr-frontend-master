@@ -45,7 +45,7 @@ export default function DataTable(props) {
       if (props.type === "remove") {
           return <Button onClick={props.removeContactData} color="primary" variant="contained" size="small">Delete Me</Button>
       } else if (props.type === "add") {
-          return <Checkbox onClick={props.selectContacts} />
+          return <Checkbox checked={props.checked} onClick={props.selectContacts} />
       }
   }
 

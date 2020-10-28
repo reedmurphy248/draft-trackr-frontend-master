@@ -7,14 +7,14 @@ import 'fontsource-roboto';
 
 export default function SelectedFile(props) {
     return (
-        <Grid container spacing={2} style={{borderBottom: 'solid 1px black', marginTop: '3px', marginBottom: '5px'}}>
+        <Grid container spacing={2}>
             <Grid item>
-                <Typography variant="h6">{props.fileName}</Typography>
+                <Typography style={{paddingTop: '2.5%'}} variant="h6">{props.fileName}</Typography>
             </Grid>
             <Grid item>
-                <Button onClick={props.removeFile} variant="contained" color="secondary" size="sm" name={props.fileName}>
-                    x
-                </Button>
+                <IconButton onClick={props.removeFile} variant="contained" style={{color: '#e50f0f'}} size="sm" name={props.fileName}>
+                    <CancelIcon />
+                </IconButton>
             </Grid>
         </Grid>
     )
