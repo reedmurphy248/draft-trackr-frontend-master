@@ -12,7 +12,7 @@ import Checkbox from '@material-ui/core/Checkbox';
 
 const StyledTableCell = withStyles(() => ({
   head: {
-    backgroundColor: 'black',
+    backgroundColor: '#3f51b5',
     color: 'white',
   },
   body: {

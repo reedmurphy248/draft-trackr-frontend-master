@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState, useEffect} from 'react';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { BrowserRouter as Router, Route } from "react-router-dom";
@@ -16,10 +16,16 @@ import WelcomePage from './components/WelcomePage';
 
 
 function App() {
+  const [currentPage, updatePageLocation] = useState("http://localhost:3000/");
+
+  useEffect(() => {
+    updatePageLocation(window.location.href);
+  })
+
   return (
     <Router>
       <div className="App">
-        <Navbar />
+        <Navbar currentPage = {currentPage} />
         <Route path="/register" component={Register} />
         <Route path="/login" component={Login} />
         <Route path="/main" component={MainPage} />

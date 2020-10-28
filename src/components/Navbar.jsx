@@ -7,6 +7,8 @@ import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import MenuIcon from '@material-ui/icons/Menu';
 
 import axios from "axios";
 
@@ -14,24 +16,27 @@ import getAuthHeader from "../services/tokenService";
 
 const useStyles = makeStyles((theme) => ({
     root: {
-      flexGrow: 1,
-    },
-    menuButton: {
-      marginRight: theme.spacing(2),
+        flexGrow: 1,
     },
     title: {
-      flexGrow: 1,
+        flexGrow: 1,
+        marginRight: theme.spacing(10),
     },
     container: {
         display: 'flex',
         flexDirection: 'row',
-    }
+    },
+    MenuLinks: {
+        color: 'white'
+    },
 }));
 
-export default function Navbar() {
+export default function Navbar(props) {
     const classes = useStyles();
 
     const [loggedIn, changeStatus] = useState(false);
+
+    
 
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('user'));
@@ -46,14 +51,52 @@ export default function Navbar() {
         }
     })
     function accessAllRoutes() {
-        return (
-            <div>
-                <Link to="/main" className="navbar-brand">Main Page</Link>
-                <Link to="/logout" className="navbar-brand">Logout</Link>
-                <Link to="/upload" className="navbar-brand">Upload Contacts</Link>
-                <Link to="/remove" className="navbar-brand">Remove Contacts</Link>
-            </div>
-        )
+        if (props.currentPage === "http://localhost:3000/main") {
+            return (
+                <div>
+                    <Link to="/upload" className="navbar-brand">
+                        <Typography variant="subtitle1" className={classes.MenuLinks}>
+                                Upload
+                        </Typography>
+                    </Link>
+                    <Link to="/remove" className="navbar-brand">
+                        <Typography variant="subtitle1" className={classes.MenuLinks}>
+                                Remove
+                        </Typography>
+                    </Link>
+                </div>
+            )
+        } else if (props.currentPage === "http://localhost:3000/remove") {
+            return (
+                <div>
+                    <Link to="/main" className="navbar-brand">
+                        <Typography variant="subtitle1" className={classes.MenuLinks}>
+                                Main
+                        </Typography>
+                    </Link>
+                    <Link to="/upload" className="navbar-brand">
+                        <Typography variant="subtitle1" className={classes.MenuLinks}>
+                                Upload
+                        </Typography>
+                    </Link>
+                </div>
+            )
+        } else if (props.currentPage === "http://localhost:3000/upload") {
+            return (
+                <div>
+                    <Link to="/main" className="navbar-brand">
+                        <Typography variant="subtitle1" className={classes.MenuLinks}>
+                                Main
+                        </Typography>
+                    </Link>
+                    <Link to="/remove" className="navbar-brand">
+                        <Typography variant="subtitle1" className={classes.MenuLinks}>
+                                Remove
+                        </Typography>
+                    </Link>
+                </div>
+            )
+        }
     }
     return (
         // <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -67,28 +110,13 @@ export default function Navbar() {
         //     </div>
         // </nav>
 
-        <AppBar position="static">
+        <AppBar position="static" className={classes.root}>
             <Toolbar>
-                <Grid container className={classes.container}>
-                    <Grid item >
-                        <Link to="/upload" className="navbar-brand"><Typography variant="h6">
-                            Upload Contacts
-                        </Typography></Link>
-                        <Link to="/remove" className="navbar-brand"><Typography variant="h6">
-                            Remove Contacts
-                        </Typography></Link>
-                    </Grid>
-                    <Grid item >
-                        <Typography variant="h5">
-                            DraftTrackr
-                        </Typography>
-                    </Grid>
-                    <Grid item >
-                        <Link to="/remove" className="navbar-brand"><Typography variant="h6">
-                            Login
-                        </Typography></Link>
-                    </Grid>
-                </Grid>
+                {loggedIn ? accessAllRoutes() : null}
+                <Typography variant="h5" className={classes.title}>
+                    DraftTrackr
+                </Typography>
+                <Button color="inherit">Login</Button>
             </Toolbar>
         </AppBar>
     )
