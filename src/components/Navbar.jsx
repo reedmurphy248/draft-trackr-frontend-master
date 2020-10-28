@@ -36,7 +36,7 @@ export default function Navbar(props) {
 
     const [loggedIn, changeStatus] = useState(false);
 
-    
+
 
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('user'));
@@ -49,54 +49,90 @@ export default function Navbar(props) {
                     console.log("Error: " + err);
                 })
         }
-    })
-    function accessAllRoutes() {
-        if (props.currentPage === "http://localhost:3000/main") {
+    });
+    function checkRoute(event) {
+        if (loggedIn && event !== undefined) {
+            console.log(event.target.parentElement.href);
+            if (event.target.parentElement.href == "http://localhost:3000/main") {
+                return (
+                    <div>
+                        <Link to="/upload" className="navbar-brand">
+                            <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                                Upload
+                        </Typography>
+                        </Link>
+                        <Link to="/remove" className="navbar-brand">
+                            <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                                Remove
+                        </Typography>
+                        </Link>
+                    </div>
+                )
+            } else if (event.target.parentElement.href == "http://localhost:3000/remove") {
+                return (
+                    <div>
+                        <Link to="/main" className="navbar-brand">
+                            <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                                Main
+                        </Typography>
+                        </Link>
+                        <Link to="/upload" className="navbar-brand">
+                            <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                                Upload
+                        </Typography>
+                        </Link>
+                    </div>
+                )
+            } else if (event.target.parentElement.href == "http://localhost:3000/upload") {
+                return (
+                    <div>
+                        <Link to="/main" className="navbar-brand">
+                            <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                                Main
+                            </Typography>
+                        </Link>
+                        <Link to="/remove" className="navbar-brand">
+                            <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                                Remove
+                            </Typography>
+                        </Link>
+                    </div>
+                )
+            }
+        } else if (loggedIn) {
             return (
                 <div>
                     <Link to="/upload" className="navbar-brand">
-                        <Typography variant="subtitle1" className={classes.MenuLinks}>
-                                Upload
+                        <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                            Upload
                         </Typography>
                     </Link>
                     <Link to="/remove" className="navbar-brand">
-                        <Typography variant="subtitle1" className={classes.MenuLinks}>
-                                Remove
+                        <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                            Remove
                         </Typography>
                     </Link>
                 </div>
             )
-        } else if (props.currentPage === "http://localhost:3000/remove") {
-            return (
-                <div>
-                    <Link to="/main" className="navbar-brand">
-                        <Typography variant="subtitle1" className={classes.MenuLinks}>
-                                Main
-                        </Typography>
-                    </Link>
-                    <Link to="/upload" className="navbar-brand">
-                        <Typography variant="subtitle1" className={classes.MenuLinks}>
-                                Upload
-                        </Typography>
-                    </Link>
-                </div>
-            )
-        } else if (props.currentPage === "http://localhost:3000/upload") {
-            return (
-                <div>
-                    <Link to="/main" className="navbar-brand">
-                        <Typography variant="subtitle1" className={classes.MenuLinks}>
-                                Main
-                        </Typography>
-                    </Link>
-                    <Link to="/remove" className="navbar-brand">
-                        <Typography variant="subtitle1" className={classes.MenuLinks}>
-                                Remove
-                        </Typography>
-                    </Link>
-                </div>
-            )
+        } else {
+            return null
         }
+    }
+    function accessAllRoutes() {
+        return (
+            <div>
+                <Link to="/upload" className="navbar-brand">
+                    <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                        Upload
+                    </Typography>
+                </Link>
+                <Link to="/remove" className="navbar-brand">
+                    <Typography variant="subtitle1" className={classes.MenuLinks} onClick={checkRoute}>
+                        Remove
+                    </Typography>
+                </Link>
+            </div>
+        )
     }
     return (
         // <nav className="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -112,7 +148,7 @@ export default function Navbar(props) {
 
         <AppBar position="static" className={classes.root}>
             <Toolbar>
-                {loggedIn ? accessAllRoutes() : null}
+                {loggedIn ? checkRoute() : null}
                 <Typography variant="h5" className={classes.title}>
                     DraftTrackr
                 </Typography>
