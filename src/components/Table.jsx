@@ -8,6 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Paper from '@material-ui/core/Paper';
 import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
 
 const StyledTableCell = withStyles(() => ({
   head: {
@@ -40,6 +41,14 @@ const useStyles = makeStyles({
 export default function DataTable(props) {
   const classes = useStyles();
 
+  function TableType() {
+      if (props.type === "remove") {
+          return <Button onClick={props.removeContactData} color="primary" variant="contained" size="small">Delete Me</Button>
+      } else if (props.type === "add") {
+          return <Checkbox onClick={props.selectContacts} />
+      }
+  }
+
   return (
     <TableContainer component={Paper}>
       <Table className={classes.table} aria-label="customized table">
@@ -61,7 +70,7 @@ export default function DataTable(props) {
               <StyledTableCell align="right">{row.firstName}</StyledTableCell>
               <StyledTableCell align="right">{row.lastName}</StyledTableCell>
               <StyledTableCell align="center">{row.email}</StyledTableCell>
-              <StyledTableCell><Button onClick={props.removeContactData} color="primary" variant="contained" size="small">Delete Me</Button></StyledTableCell>
+              <StyledTableCell>{TableType()}</StyledTableCell>
             </StyledTableRow>
           ))}
         </TableBody>

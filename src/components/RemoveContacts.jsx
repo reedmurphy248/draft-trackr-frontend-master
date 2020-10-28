@@ -3,8 +3,6 @@ import axios from "axios";
 
 import { makeStyles } from '@material-ui/core/styles';
 
-import ContactRowDelete from "./ContactRowDelete";
-
 import getAuthHeader from "../services/tokenService";
 import { Container, CssBaseline } from "@material-ui/core";
 
@@ -31,7 +29,7 @@ export default function RemoveContacts(props) {
     const classes = useStyles();
 
     const [contacts, changeContacts] = useState([]);
-    const [loggedIn, changeStatus] = useState(false)
+    const [loggedIn, changeStatus] = useState(false);
 
     useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('user'));
@@ -45,28 +43,19 @@ export default function RemoveContacts(props) {
                     console.log("Error: " + err);
                 })
         }
-
     });
     function removeContactData(event) {
         axios.delete(`http://localhost:5000/contacts/${event.target.parentElement.parentElement.parentElement.id}`)
             // .then(() => window.location = "/remove")
             .catch(err => console.log(err))
     }
-    function produceContactData() {
-        return (contacts.map((contact, index) => {
-            return <div className={classes.contacts}>
-                <ContactRowDelete removeContactData={removeContactData} key={index} id={contact._id} company={contact.company} firstName={contact.firstName} lastName={contact.lastName} email={contact.email}/>
-            </div>
-        }));
-    }
-    
     
     function pageAccess() {
         return (
             <Container maxWidth="md" component="main">
                 <CssBaseline />
                 <h1 className={classes.title}>Contacts</h1>
-                <DataTable rows={contacts} removeContactData={removeContactData}></DataTable>
+                <DataTable type="remove" rows={contacts} removeContactData={removeContactData}></DataTable>
             </Container>
         )
     }

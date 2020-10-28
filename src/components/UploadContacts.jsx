@@ -1,83 +1,119 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
+
+import { Container, CssBaseline, Button, Grid, Typography } from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
+import 'fontsource-roboto';
 
 import ReactFileReader from "react-file-reader";
 import SelectedFile from "./SelectedFile";
 
 import getAuthHeader from "../services/tokenService";
 
-export default class UploadContacts extends Component {
-    constructor(props) {
-        super(props);
-        this.handleFiles = this.handleFiles.bind(this);
-        this.uploadFiles = this.uploadFiles.bind(this);
-        this.removeFile = this.removeFile.bind(this);
-        this.pageAccess = this.pageAccess.bind(this);
-
-        this.state = {
-            files: [],
-            loggedIn: false
-        }
+const useStyles = makeStyles((theme) => ({
+    container: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        backgroundColor: '#4cc9f0'
+    },
+    paper: {
+        display: 'flex',
+        flexDirection: 'column',
+        borderRadius: '8px',
+        // boxShadow: '1px 1px 5px black',
+        minHeight: '70vh',
+        alignItems: 'center',
+        margin: '50px',
+        border: '#323aa8 solid 1px',
+        minWidth: '40%',
+        // background: 'linear-gradient(55deg, #e5e3ea 30%, #91e7ea 90%)',
+        backgroundColor: '#4361ee'
+    },
+    grid: {
+        justifyContent: 'center',
+        maxWidth: '40%',
+        marginTop: '1vh'
+    },
+    selectedPanel: {
+        borderRadius: '5px',
+        minWidth: '50%',
+        // minHeight: '40vh',
+        alignItems: 'center',
+        display: 'flex',
+        flexDirection: 'column',
+        margin: '10px'
     }
-    componentDidMount() {
+}));
+
+export default function UploadContacts() {
+    const classes = useStyles();
+
+    const [files, updateFiles] = useState([]);
+    const [loggedIn, changeStatus] = useState(false);
+
+    useEffect(() => {
         const userInfo = JSON.parse(localStorage.getItem('user'));
         if (userInfo !== null) {
             axios.get('http://localhost:5000/contacts/all', { headers: getAuthHeader() })
                 .then(() => {
-                    this.setState({loggedIn: true});
+                    changeStatus(true);
                 })
                 .catch(err => {
                     console.log("Error: " + err);
                 })
         }
-    }
-    handleFiles = files => {
+    });
+    const handleFiles = files => {
         const inputArr = files.base64.split(",");
 
-        this.setState({files: this.state.files.concat([[files.fileList[0].name, inputArr[1]]])})
+        updateFiles(prevValue => {
+            return [...prevValue, [files.fileList[0].name, inputArr[1]]]
+        })
     }
-    removeFile(event) {
-        this.setState({files: this.state.files.filter(x => x[0] !== event.target.name)});
+    function removeFile(event) {
+        updateFiles(prevValue => {
+            return prevValue.filter(x => x[0] !== event.target.parentElement.name);
+        });
     }
-    uploadFiles(event) {
+    function uploadFiles(event) {
         event.preventDefault();
 
-        const userInfo = JSON.parse(localStorage.getItem('user'));
-        const token = userInfo.data.accessToken;
-        const authHeader = { "x-access-token": token };
-
         const fileValues = []
-        for (var i = 0; i < this.state.files.length; i++) {
-            fileValues.push(this.state.files[i][1]);
+        for (var i = 0; i < files.length; i++) {
+            fileValues.push(files[i][1]);
         }
 
-        axios.post('http://localhost:5000/contacts/add', fileValues, { headers: authHeader })
-            .then(() => window.location="/main")
+        axios.post('http://localhost:5000/contacts/add', fileValues, { headers: getAuthHeader() })
+            .then(() => window.location = "/main")
             .catch(err => console.log("Error: " + err))
 
     }
-    pageAccess() {
+    function pageAccess() {
         return (
-            <div>
-                <h1>Upload Files</h1>
-                <h3>Upload Contact Data as CSV files</h3>
-                <ReactFileReader fileTypes={".csv"} base64={true} handleFiles={this.handleFiles}>
-                    <button className='btn btn-primary'>Select Files</button>
-                </ReactFileReader>
-                <button onClick={this.uploadFiles} className='btn btn-primary'>Upload Files</button>
-                <div class="jumbotron jumbotron-fluid">
-                    <div class="container">
-                        <h1 class="display-4">Selected Files</h1>
-                        <div>{this.state.files.map(file => <SelectedFile removeFile={this.removeFile} fileName={file[0]}/>)}</div>
-                    </div>
+            <Container className={classes.container}>
+            <CssBaseline />
+                <div className={classes.paper}>
+                    <Typography variant="h3" style={{marginTop: "3vh"}}>Upload Files</Typography>
+                    <Container className={classes.selectedPanel}>
+                        <div>{files.map((file, index) => <SelectedFile key={index} removeFile={removeFile} fileName={file[0]} />)}</div>
+                    </Container>
+                    <Grid container className={classes.grid} spacing={3}>
+                        <Grid item>
+                            <ReactFileReader fileTypes={".csv"} base64={true} handleFiles={handleFiles}>
+                                <Button color='primary' variant="contained">Select Files</Button>
+                            </ReactFileReader>
+                        </Grid>
+                        <Grid item>
+                            <Button onClick={uploadFiles} size="md" color='primary' variant="contained">Upload Files</Button>
+                        </Grid>
+                    </Grid>
                 </div>
-            </div>
+            </Container>
         )
     }
-    render() {
-        return (
-            <div>{this.state.loggedIn ? this.pageAccess() : <h1>Not Logged In</h1>}</div>
-        )
-    }
+    return (
+        <div>{loggedIn ? pageAccess() : <h1>Not Logged In</h1>}</div>
+    )
 }
 

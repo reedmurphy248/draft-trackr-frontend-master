@@ -1,15 +1,19 @@
-import React, { Component } from "react";
+import React from "react";
+import { Button, Typography, Grid } from "@material-ui/core";
 
-export default class SelectedFile extends Component {
-    constructor(props) {
-        super(props);
-    }
-    render() {
-        return (
-            <div>
-                <p>{this.props.fileName}</p>
-                <button onClick={this.props.removeFile} name={this.props.fileName} className="btn btn-danger">Remove File</button>
-            </div>
-        )
-    }
+import 'fontsource-roboto';
+
+export default function SelectedFile(props) {
+    return (
+        <Grid container spacing={2} style={{borderBottom: 'solid 1px black', marginTop: '3px', marginBottom: '5px'}}>
+            <Grid item>
+                <Typography variant="h6">{props.fileName}</Typography>
+            </Grid>
+            <Grid item>
+                <Button onClick={props.removeFile} variant="contained" color="secondary" size="sm" name={props.fileName}>
+                    x
+                </Button>
+            </Grid>
+        </Grid>
+    )
 }

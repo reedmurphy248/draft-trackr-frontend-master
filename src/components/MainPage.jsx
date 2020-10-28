@@ -2,13 +2,45 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import base64 from "base-64";
 
+import { Container, CssBaseline, Button, Grid, Typography, TextField } from "@material-ui/core";
+import 'fontsource-roboto';
+
 import encryptWithPublicKey from "../services/emailSecurity";
 import getAuthHeader from "../services/tokenService";
 import isIn from "../services/isIn";
 
-import ContactRow from "./ContactRow";
+import { makeStyles } from '@material-ui/core/styles';
+
+import DataTable from "./Table";
+
+const useStyles = makeStyles((theme) => ({
+    paper: {
+        marginTop: theme.spacing(4),
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'Center',
+    },
+    topHalf: {
+        justifyContent: 'Center',
+        maxWidth: '80%',
+    },
+    passwordSection: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'Center',
+    },
+    buttons: {
+        minWidth: '100%', 
+        minHeight: '10vh'
+    },
+    bottomHalf: {
+        maxWidth: '85%',
+        marginTop: '3vh'
+    }
+}));
 
 export default function MainPage() {
+    const classes = useStyles();
 
     const [contacts, changeContacts] = useState([]);
     const [emailInfo, changeInfo] = useState({
@@ -49,8 +81,7 @@ export default function MainPage() {
         })
     }
     function selectContacts(event) {
-
-        const contactID = event.target.parentElement.id;
+        const contactID = event.target.parentElement.parentElement.parentElement.parentElement.id;
 
         if (!isIn(contactID, selectedContacts)) {
             changeSelected(prevValue => {
@@ -61,7 +92,6 @@ export default function MainPage() {
                 return prevValue.filter(contact => contact !== contactID);
             });
         }
-
     }
     function encryptPassword() {
         axios.get('http://localhost:5000/security/', { headers: getAuthHeader() })
@@ -80,6 +110,7 @@ export default function MainPage() {
     }
     function sendEmail(event) {
         event.preventDefault();
+        console.log("Sent email");
 
         const emailbody = {
             email: emailInfo.emailBody,
@@ -88,31 +119,59 @@ export default function MainPage() {
         }
         // Send over the token to know who is the sender, the contacts they wish to send to, and the draft
         axios.post('http://localhost:5000/contacts/send', emailbody, { headers: getAuthHeader() })
-            .then(res => console.log(res))
+            .then(res => {
+                console.log(res)
+                changeInfo(prevValue => {
+                    return {
+                        emailBody: "",
+                        userEmailPassword: prevValue.userEmailPassword
+                    }
+                })
+            })
             .catch(err => console.log("Error: " + err));
     }
 
     function mainPageAccess() {
         return (
-            <div className="container">
-                <h1>Write Draft</h1>
-                <textarea name="emailBody" value={emailInfo.emailBody} onChange={handleChange} cols="90" rows="12"></textarea>
-                <h2>Email Password</h2>
-                <small>Needed to send emails via your account</small>
-                <br />
-                <small>Your email will be encrypted and never saved on file so no one anyone will ever have access to it</small>
-                <br />
-                <input name="userEmailPassword" value={emailInfo.userEmailPassword} onChange={handleChange} type="password" placeholder="Account Password"></input>
-                <button onClick={encryptPassword} className="btn btn-primary">Encrypt Password</button>
-                <br />
-                <button onClick={sendEmail} type="submit" className="btn btn-primary">Submit</button>
-                <div className="jumbotron jumbotron-fluid">
-                    <div className="container">
-                        <h1 className="display-4">Contacts</h1>
-                        <div>{contacts.map((contact, index) => <ContactRow selectContacts={selectContacts} key={index} id={contact._id} company={contact.company} firstName={contact.firstName} lastName={contact.lastName} email={contact.email} />)}</div>
-                    </div>
+            <Container>
+            <CssBaseline />
+                <div className={classes.paper}>
+                    <Grid container className={classes.topHalf} lg={10} spacing={2}>
+                        <Grid item lg={7} >
+                            <Typography variant="h4">Write Draft</Typography>
+                            <textarea 
+                                name="emailBody" value={emailInfo.emailBody} onChange={handleChange} 
+                                cols="70" rows="12" required style={{borderRadius: "10px"}}
+                            />
+                        </Grid>
+                        <Grid item container lg={5}>
+                            <Grid item container lg={12} className={classes.passwordSection} >
+                                <Typography variant="h4" style={{marginBottom: "2vh"}}>Email Password</Typography>
+                                <Typography variant="body2">Your password will be encrypted and never saved on file so no one anyone will ever have access to it</Typography>
+                                <Grid container item style={{marginTop: "3vh"}}>
+                                    <Grid item lg={6}>
+                                        <TextField 
+                                        name="userEmailPassword" value={emailInfo.userEmailPassword} onChange={handleChange} 
+                                        variant="outlined" type="password" label="Account Password"
+                                        required
+                                        />
+                                    </Grid>
+                                    <Grid item lg={6}>
+                                        <Button onClick={encryptPassword} style={{minHeight: '8.25vh'}} variant="contained" color="primary">Encrypt Password</Button>
+                                    </Grid>
+                                </Grid>
+                            </Grid>
+                            <Grid item lg={12} >
+                                <Button onClick={sendEmail} className={classes.buttons} size="large" variant="contained" color="primary">Send Email</Button>
+                            </Grid>
+                        </Grid>
+                    </Grid>
+                    <Container className={classes.bottomHalf}>
+                        <Typography variant="h3">Select Contacts</Typography>
+                        <DataTable type="add" selectContacts={selectContacts} rows={contacts}/>
+                    </Container>
                 </div>
-            </div>
+            </Container>
         )
     }
 
